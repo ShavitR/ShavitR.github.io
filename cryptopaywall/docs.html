@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CryptoPaywall Docs - API reference and guides</title>
+<meta name="description" content="Complete CryptoPaywall documentation: quickstart, Payment Links API, verification endpoint, environment variables, webhook payloads, and manual link generation.">
+<style>
+ body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin:0; line-height:1.7; color:#1a1a1a; }
+ main { max-width: 820px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+ h1 { margin-bottom:.2rem } h2 { margin-top:2.4rem; border-bottom:1px solid #ddd; padding-bottom:.3rem }
+ @media(prefers-color-scheme:dark){ body{color:#eee} h2{border-color:#333} }
+ code, pre { background:#f4f4f4; border-radius:6px; font-size:.92em; font-family:ui-monospace,Consolas,monospace }
+ code { padding:.15em .35em } pre { padding:1rem; overflow-x:auto }
+ @media(prefers-color-scheme:dark){ code,pre{background:#1e1e1e} }
+ table { border-collapse:collapse; width:100%; font-size:.9rem; margin:1rem 0 }
+ th,td { border-bottom:1px solid #ddd; text-align:left; padding:.45rem .55rem; vertical-align:top }
+ @media(prefers-color-scheme:dark){ th,td{border-color:#333} }
+ .m { color:#0366d6; font-weight:600 }
+ @media(prefers-color-scheme:dark){ .m{color:#58a6ff} }
+ nav a { margin-right:1rem }
+</style>
+</head>
+<body><main>
+<h1>CryptoPaywall Documentation</h1>
+<p style="color:#667">Everything needed to deploy, integrate, and extend CryptoPaywall.</p>
+<nav>
+ <a href="#quickstart">Quickstart</a>
+ <a href="#payment-links">Payment Links</a>
+ <a href="#verify">Verify endpoint</a>
+ <a href="#env">Environment variables</a>
+ <a href="#webhooks">Webhooks (Pro)</a>
+ <a href="#manual-links">Manual links (Pro)</a>
+</nav>
+
+<h2 id="quickstart">Quickstart</h2>
+<p>Sell a digital file for USDC on your own hosted checkout:</p>
+<pre>git clone https://github.com/ShavitR/cryptopaywall && cd cryptopaywall
+node bin/prepare.js product.zip --name "My Product" --price "$9 USDC"</pre>
+<p><code>prepare.js</code> prints every environment variable - including a generated signing secret, a default three-chain config, and your file embedded as base64. Paste them into Vercel via the deploy button in the README. Total time: about five minutes.</p>
+<p>No deployment at all? Use a <a href="#payment-links">Payment Link</a> against any public CryptoPaywall instance.</p>
+
+<h2 id="payment-links">Payment Links</h2>
+<p>A hosted checkout for any wallet, created by URL alone:</p>
+<pre>/api/link?to=0xYOUR_WALLET&amp;amount=9&amp;chain=base&amp;name=My%20Product</pre>
+<h3>Query parameters</h3>
+<table>
+ <tr><th>Param</th><th>Required</th><th>Description</th></tr>
+ <tr><td><code>to</code></td><td>yes</td><td>Wallet address receiving the payment (<code>0x</code> + 40 hex chars)</td></tr>
+ <tr><td><code>amount</code></td><td>yes</td><td>Price in human units (e.g. <code>9</code> = $9 USDC)</td></tr>
+ <tr><td><code>chain</code></td><td>no</td><td>Comma list of enabled chains: <code>ethereum</code>, <code>base</code>, <code>polygon</code>. Default <code>base</code></td></tr>
+ <tr><td><code>name</code></td><td>no</td><td>Product name shown to buyers (max 80 chars). Default "Payment"</td></tr>
+ <tr><td><code>redirect</code></td><td>no</td><td>HTTPS success URL. Verified buyers are redirected there; <code>__RECEIPT__</code> in the URL is replaced with the signed receipt token</td></tr>
+ <tr><td><code>token</code></td><td>no</td><td>ERC-20 contract override (single-chain links only). Default: native USDC per chain</td></tr>
+ <tr><td><code>decimals</code></td><td>no</td><td>Token decimals override (single-chain only, 1-36). Default 6</td></tr>
+</table>
+<p>The checkout page shows price, QR code, destination address, and a hash-verification form. It is marked <code>noindex</code>.</p>
+
+<h2 id="verify">Verify endpoint</h2>
+<p><span class="m">POST /api/verify</span> - check any transaction against any recipient. This powers Payment Links and can power your own integrations.</p>
+<h3>Request</h3>
+<pre>{
+  "txHash": "0x...",          // required, 66 hex chars
+  "to":     "0xWALLET",       // required, expected payment destination
+  "chains": [                 // optional, max 4
+    { "id": "base", "name": "Base",
+      "token": "0x8335...2913", "decimals": 6,
+      "rpcs": ["https://mainnet.base.org"] }
+  ],
+  "minWei": "9000000",        // optional minimum in base units
+  "decimals": 6               // fallback if chain omits decimals
+}</pre>
+<h3>Responses</h3>
+<table>
+ <tr><th>Status</th><th>Meaning</th></tr>
+ <tr><td><code>200</code></td><td><code>{ ok: true, amount, chain, token }</code> - token is an HMAC-signed receipt (24h validity)</td></tr>
+ <tr><td><code>400</code></td><td>Malformed input</td></tr>
+ <tr><td><code>402</code></td><td>Transaction found but no qualifying transfer, or not yet confirmed</td></tr>
+ <tr><td><code>502</code></td><td>All RPC endpoints unreachable - retry shortly</td></tr>
+</table>
+<p><strong>Receipt validation:</strong> the returned <code>token</code> is <code>base64url(JSON)</code> + <code>.</code> + HMAC-SHA256 signature over <code>"subject:exp"</code> using the server's secret. Validate it yourself, or accept it into your <code>redirect</code> URL and trust your own deployment's issuance.</p>
+
+<h2 id="env">Environment variables</h2>
+<table>
+ <tr><th>Variable</th><th>Required</th><th>Description</th></tr>
+ <tr><td><code>MERCHANT_ADDRESS</code></td><td>yes</td><td>Your wallet - payments land here directly</td></tr>
+ <tr><td><code>PRODUCT_NAME</code></td><td>yes</td><td>Storefront title + download filename</td></tr>
+ <tr><td><code>PAYWALL_SECRET</code></td><td>prod</td><td>HMAC secret for signed links. Generate with <code>node bin/prepare.js</code></td></tr>
+ <tr><td><code>PRODUCT_ZIP_B64</code></td><td>prod</td><td>Your file, base64-encoded</td></tr>
+ <tr><td><code>CHAINS</code></td><td>one of</td><td>JSON array of accepted chains (multi-chain mode)</td></tr>
+ <tr><td><code>TOKEN_CONTRACT</code></td><td>one of</td><td>Single-chain mode ERC-20 contract</td></tr>
+ <tr><td><code>TOKEN_DECIMALS</code></td><td>w/ single</td><td>6 for USDC, 18 typical otherwise</td></tr>
+ <tr><td><code>MIN_ACCEPT_UNITS</code></td><td>no</td><td>Minimum unlock amount in base units (default 1)</td></tr>
+ <tr><td><code>PRICE_LABEL</code></td><td>no</td><td>Suggested-price text, e.g. "$9 USDC"</td></tr>
+ <tr><td><code>RPC_URLS</code></td><td>no</td><td>Comma-separated JSON-RPC fallbacks (single-chain mode)</td></tr>
+</table>
+<p>Full examples in the repository <a href="https://github.com/ShavitR/cryptopaywall#readme">README</a>.</p>
+
+<h2 id="webhooks">Webhooks (Pro Pack)</h2>
+<p>Replace <code>api/unlock.js</code> with <code>api/webhook-unlock.js</code> from the Pro Pack and set <code>WEBHOOK_URL</code>. Every verified payment POSTs:</p>
+<pre>{
+  "event":  "payment.verified",
+  "txHash": "0x...",
+  "amount": 19,
+  "chain":  "Base",
+  "ts":     1787400000000
+}
+</pre>
+<p>Header <code>x-cryptopaywall-event: payment.verified</code>. Timeout is 3 seconds; webhook failures never block buyer delivery.</p>
+
+<h2 id="manual-links">Manual links (Pro Pack)</h2>
+<p>Mint a signed download link without payment - refunds, comps, press copies:</p>
+<pre>PAYWALL_SECRET=&lt;your-secret&gt; node bin/link.js \
+  --url https://your-store.vercel.app --hours 48 --note "comp-jane"</pre>
+<p>Minted links use the same HMAC scheme as storefront links, so no server changes are required. Anyone holding your secret can mint unlimited links - treat it like a database password.</p>
+
+<p style="margin-top:3rem"><a href="/">Home</a> · <a href="https://github.com/ShavitR/cryptopaywall">GitHub</a> · <a href="https://cryptopro-store.vercel.app/">Pro Pack ($19)</a></p>
+</main></body></html>
