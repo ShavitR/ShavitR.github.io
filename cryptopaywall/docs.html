@@ -28,6 +28,7 @@
  <a href="#quickstart">Quickstart</a>
  <a href="#payment-links">Payment Links</a>
  <a href="#verify">Verify endpoint</a>
+ <a href="#embed">Embed button</a>
  <a href="#env">Environment variables</a>
  <a href="#webhooks">Webhooks (Pro)</a>
  <a href="#manual-links">Manual links (Pro)</a>
@@ -95,6 +96,16 @@ node bin/prepare.js product.zip --name "My Product" --price "$9 USDC"</pre>
  <tr><td><code>RPC_URLS</code></td><td>no</td><td>Comma-separated JSON-RPC fallbacks (single-chain mode)</td></tr>
 </table>
 <p>Full examples in the repository <a href="https://github.com/ShavitR/cryptopaywall#readme">README</a>.</p>
+
+<h2 id="embed">Embed button</h2>
+<p>One script tag renders a "Pay with USDC" button anywhere - blog posts, docs, landing pages:</p>
+<pre>&lt;script src="https://your-deployment.vercel.app/embed.js"
+  data-to="0xYOUR_WALLET"
+  data-amount="9"
+  data-chain="base"
+  data-name="My Product"&gt;
+&lt;/script&gt;</pre>
+<p>Attributes: <code>data-to</code> (required wallet), <code>data-amount</code>, <code>data-chain</code> (default base), <code>data-name</code>, <code>data-label</code> (button text). The button opens the Payment Link checkout in a new tab.</p>
 
 <h2 id="webhooks">Webhooks (Pro Pack)</h2>
 <p>Replace <code>api/unlock.js</code> with <code>api/webhook-unlock.js</code> from the Pro Pack and set <code>WEBHOOK_URL</code>. Every verified payment POSTs:</p>
