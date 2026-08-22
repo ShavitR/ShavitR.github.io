@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://shavitr.github.io/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://shavitr.github.io/subsniff/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://shavitr.github.io/subsniff/find-hidden-subscriptions.html</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://shavitr.github.io/subsniff/chase-subscriptions.html</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://shavitr.github.io/subsniff/amex-recurring-charges.html</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://shavitr.github.io/subsniff/capital-one-subscriptions.html</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://github.com/ShavitR/subsniff</loc></url>
+  <url><loc>https://github.com/ShavitR/cryptopaywall</loc></url>
+  <url><loc>https://subsniff-store.vercel.app/</loc></url>
+</urlset>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ShavitR - small tools that pay for themselves</title>
+<meta name="description" content="SubSniff finds hidden subscriptions in bank CSV exports; CryptoPaywall sells digital downloads for USDC with on-chain verification. Both offline-friendly, MIT licensed.">
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; line-height: 1.7; color:#1a1a1a; }
+  main { max-width: 720px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  h1 { margin-bottom: .3rem; }
+  .tag { color:#666; margin-top:0; }
+  @media (prefers-color-scheme: dark) { body{color:#eee;} .tag{color:#999;} }
+  .card { border:1px solid #ddd; border-radius:12px; padding:1.25rem; margin:1rem 0; }
+  @media (prefers-color-scheme: dark) { .card { border-color:#333; } }
+  .card h2 { margin:.2rem 0 .5rem; font-size:1.15rem; }
+  a.btn { display:inline-block; background:#111; color:#fff; padding:.55rem 1rem; border-radius:8px; text-decoration:none; font-weight:600; font-size:.95rem; margin-right:.5rem; }
+  @media (prefers-color-scheme: dark) { a.btn { background:#eee; color:#111; } }
+  ul { padding-left: 1.2rem; }
+  li { margin:.3rem 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Small tools that pay for themselves</h1>
+  <p class="tag">Offline-first, dependency-light, MIT licensed.</p>
+
+  <div class="card">
+    <h2>SubSniff - find the subscriptions hiding in your bank statement</h2>
+    <p>Scan the CSV export you already have and see every recurring charge with yearly costs ranked by what to cancel first. No bank login, nothing leaves your machine.</p>
+    <a class="btn" href="https://shavitr.github.io/subsniff/">Product page</a>
+    <a class="btn" href="https://subsniff-store.vercel.app/">Get it</a>
+    <a class="btn" href="https://github.com/ShavitR/subsniff">Source</a>
+    <ul style="margin-bottom:0">
+      <li><a href="/subsniff/find-hidden-subscriptions.html">Guide: find every subscription charged to your card</a></li>
+      <li><a href="/subsniff/chase-subscriptions.html">Chase statement subscription finder</a></li>
+      <li><a href="/subsniff/amex-recurring-charges.html">Amex recurring charges</a></li>
+      <li><a href="/subsniff/capital-one-subscriptions.html">Capital One subscription finder</a></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>CryptoPaywall - sell digital downloads for USDC</h2>
+    <p>Self-hosted paywall with automatic on-chain payment verification. No Stripe, no PayPal, no accounts - payments land directly in your wallet.</p>
+    <a class="btn" href="https://github.com/ShavitR/cryptopaywall">Source &amp; one-click deploy</a>
+    <a class="btn" href="https://subsniff-store.vercel.app/">Live demo store</a>
+  </div>
+</main>
+</body>
+</html>
