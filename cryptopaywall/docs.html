@@ -57,6 +57,12 @@ node bin/prepare.js product.zip --name "My Product" --price "$9 USDC"</pre>
 </table>
 <p>The checkout page shows price, QR code, destination address, and a hash-verification form. It is marked <code>noindex</code>.</p>
 
+<div style="border:1px solid #1652f0;border-radius:10px;padding:1rem 1.25rem;margin:1.25rem 0;background:rgba(22,82,240,.05)">
+ <strong>Try a real one now</strong> - this link runs on the live demo deployment:
+ <pre style="margin:.6rem 0">/api/link?to=0x9378...71bfd&amp;amount=1&amp;chain=base&amp;name=Coffee%20for%20the%20dev</pre>
+ <a class="btn" href="https://cryptopro-store.vercel.app/api/link?to=0x9378516A24555581f03952BA1D4D49BFE4671bfd&amp;amount=1&amp;chain=base&amp;name=Coffee%20for%20the%20dev">Open live $1 payment link &rarr;</a>
+</div>
+
 <h2 id="verify">Verify endpoint</h2>
 <p><span class="m">POST /api/verify</span> - check any transaction against any recipient. This powers Payment Links and can power your own integrations.</p>
 <h3>Request</h3>
