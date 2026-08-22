@@ -29,6 +29,7 @@
  <a href="#payment-links">Payment Links</a>
  <a href="#verify">Verify endpoint</a>
  <a href="#embed">Embed button</a>
+ <a href="#x402">x402</a>
  <a href="#env">Environment variables</a>
  <a href="#webhooks">Webhooks (Pro)</a>
  <a href="#manual-links">Manual links (Pro)</a>
@@ -112,6 +113,13 @@ node bin/prepare.js product.zip --name "My Product" --price "$9 USDC"</pre>
   data-name="My Product"&gt;
 &lt;/script&gt;</pre>
 <p>Attributes: <code>data-to</code> (required wallet), <code>data-amount</code>, <code>data-chain</code> (default base), <code>data-name</code>, <code>data-label</code> (button text). The button opens the Payment Link checkout in a new tab.</p>
+
+<h2 id="x402">x402 - machine payments (AI agents)</h2>
+<p><span class="m">GET /api/x402/&lt;slug&gt;</span> - any product becomes an x402-addressable resource. Unauthenticated requests receive a <code>402</code> with spec-shaped payment requirements; clients that retry with an <code>X-PAYMENT</code> header get their payment settled through the x402 facilitator and the file streamed back. No hash-pasting - built for AI agents and x402-aware browsers.</p>
+<pre>curl -i https://your-deployment.vercel.app/api/x402/pro-pack
+# HTTP 402 { "x402Version": 1, "accepts": [ { "scheme": "exact",
+#   "network": "base", "maxAmountRequired": "19000000", ... } ] }</pre>
+<p>Optional env: <code>X402_FACILITATOR</code> to point at your own facilitator (default: public x402.org).</p>
 
 <h2 id="webhooks">Webhooks (Pro Pack)</h2>
 <p>Replace <code>api/unlock.js</code> with <code>api/webhook-unlock.js</code> from the Pro Pack and set <code>WEBHOOK_URL</code>. Every verified payment POSTs:</p>
