@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Accept crypto payments on Vercel in 5 minutes (USDC, no API keys)</title>
+<meta name="description" content="Step-by-step: deploy a serverless crypto paywall on Vercel that accepts USDC on Ethereum, Base and Polygon with automatic on-chain verification. No Stripe, no Coinbase Commerce, no API keys.">
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; line-height: 1.7; color: #1a1a1a; }
+  main { max-width: 760px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  h1 { font-size: 1.9rem; line-height: 1.2; }
+  h2 { margin-top: 2rem; font-size: 1.3rem; }
+  code, pre { background: #f4f4f4; border-radius: 6px; font-size: .95em; }
+  code { padding: .15em .35em; }
+  pre { padding: 1rem; overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+  @media (prefers-color-scheme: dark) { body { color:#eee; } code, pre { background:#1e1e1e; } }
+  a.btn { display:inline-block; background:#111; color:#fff; padding:.65rem 1.15rem; border-radius:8px; text-decoration:none; font-weight:600; }
+  @media (prefers-color-scheme: dark) { a.btn { background:#eee; color:#111; } }
+  li { margin: .35rem 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Accept crypto payments on Vercel in 5 minutes</h1>
+  <p><em>USDC on Ethereum, Base or Polygon - verified on-chain by your own serverless function, with automatic delivery of your digital file. No Stripe, no Coinbase Commerce account, no API keys anywhere.</em></p>
+
+  <h2>What you end up with</h2>
+  <ul>
+    <li>A storefront page at <code>your-project.vercel.app</code> showing your price and payment QR.</li>
+    <li>Buyers send USDC to your wallet and paste the transaction hash.</li>
+    <li>Your function checks the blockchain: did this exact transaction transfer enough USDC to <em>you</em>? If yes → signed download link.</li>
+    <li>Money lands in your wallet instantly. There is no step where a platform holds it.</li>
+  </ul>
+
+  <h2>The five minutes</h2>
+  <ol>
+    <li><strong>Get the code:</strong> clone <a href="https://github.com/ShavitR/cryptopaywall">ShavitR/cryptopaywall</a>, or click its Deploy-with-Vercel button.</li>
+    <li><strong>Prepare the variables:</strong> from the repo root run
+      <pre>node bin/prepare.js your-file.zip --name "My Product" --price "$9 USDC"</pre>
+      This base64-encodes your file and prints every environment variable, including a freshly generated signing secret and a default multi-chain config.
+    </li>
+    <li><strong>Paste them</strong> into Vercel's environment variables screen (Project → Settings → Environment Variables).</li>
+    <li><strong>Add your wallet address</strong> as <code>MERCHANT_ADDRESS</code>. This is where payments land.</li>
+    <li><strong>Deploy.</strong> Share the URL.</li>
+  </ol>
+
+  <h2>How the verification actually works</h2>
+  <p>When a buyer submits a hash, the function calls <code>eth_getTransactionReceipt</code> against public JSON-RPC endpoints for each configured chain. It walks the receipt's event logs looking for an ERC-20 <code>Transfer</code> event where:</p>
+  <ul>
+    <li>the emitting contract is the token you accept (e.g. native USDC on that chain),</li>
+    <li>the <code>to</code> field equals your wallet,</li>
+    <li>the transferred amount clears your minimum,</li>
+    <li>and the transaction itself succeeded (<code>status == 0x1</code>).</li>
+  </ul>
+  <p>If all four hold, it issues an HMAC-signed link valid for 24 hours. Nobody can forge one without your secret, and nobody can claim a payment that does not exist on-chain.</p>
+
+  <h2>Costs</h2>
+  <p>Vercel hobby tier covers this comfortably at low traffic. Public RPCs are free but rate-limited; swap in your own endpoints via config when you grow. Network fees are paid by buyers in gas - fractions of a cent on Base or Polygon.</p>
+
+  <p><a class="btn" href="https://github.com/ShavitR/cryptopaywall">Get CryptoPaywall (MIT)</a> <a class="btn" href="https://subsniff-store.vercel.app/">See it live</a></p>
+
+  <p>Related: <a href="sell-digital-downloads-without-stripe.html">Why sell without Stripe at all?</a></p>
+  <p><a href="/">More tools</a></p>
+</main>
+</body>
+</html>
