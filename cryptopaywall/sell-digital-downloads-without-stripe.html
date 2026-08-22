@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to sell digital downloads without Stripe (accept USDC instead)</title>
+<meta name="description" content="A practical guide to selling ebooks, presets, code and other digital downloads without a Stripe account: platform fees compared, and how to accept USDC with automatic on-chain delivery using CryptoPaywall.">
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; line-height: 1.7; color: #1a1a1a; }
+  main { max-width: 760px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  h1 { font-size: 1.9rem; line-height: 1.2; }
+  h2 { margin-top: 2rem; font-size: 1.3rem; }
+  code, pre { background: #f4f4f4; border-radius: 6px; font-size: .95em; }
+  code { padding: .15em .35em; }
+  pre { padding: 1rem; overflow-x: auto; }
+  @media (prefers-color-scheme: dark) { body { color:#eee; } code, pre { background:#1e1e1e; } }
+  table { border-collapse: collapse; width: 100%; font-size: .92rem; margin: 1rem 0; }
+  th, td { border-bottom: 1px solid #ddd; text-align: left; padding: .45rem .5rem; }
+  a.btn { display:inline-block; background:#111; color:#fff; padding:.65rem 1.15rem; border-radius:8px; text-decoration:none; font-weight:600; }
+  @media (prefers-color-scheme: dark) { th, td { border-color:#333; } a.btn { background:#eee; color:#111; } }
+  li { margin: .35rem 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>How to sell digital downloads without Stripe</h1>
+  <p><em>Stripe is the default answer for selling digital goods - and the wrong one for plenty of sellers: unsupported countries, account freezes, chargebacks, and fees that hurt $5 products. Here is the landscape as of 2026, and a fully self-hosted route.</em></p>
+
+  <h2>Why sellers look for alternatives</h2>
+  <ul>
+    <li><strong>Availability:</strong> Stripe is not open to merchants in many countries.</li>
+    <li><strong>Account risk:</strong> a single dispute wave can freeze your balance for months.</li>
+    <li><strong>Small-ticket economics:</strong> ~30&cent; + 2.9% is brutal on a $3 preset pack.</li>
+    <li><strong>Privacy:</strong> some buyers simply prefer paying crypto without creating accounts.</li>
+  </ul>
+
+  <h2>Your realistic options compared</h2>
+  <table>
+    <tr><th>Route</th><th>Fees</th><th>Payout speed</th><th>Catch</th></tr>
+    <tr><td>Gumroad / Lemon Squeezy</td><td>~10% + payment fees</td><td>Weekly/monthly</td><td>Platform owns the customer relationship; approval risk</td></tr>
+    <tr><td>PayPal buttons</td><td>~3.5% intl</td><td>Days</td><td>Dispute-friendly to buyers; account limits common</td></tr>
+    <tr><td>Coinbase Commerce</td><td>~1%</td><td>Instant-ish</td><td>Still an intermediary with its own KYC and policies</td></tr>
+    <tr><td><strong>CryptoPaywall (self-hosted)</strong></td><td><strong>0% - gas only</strong></td><td><strong>Immediate, your wallet</strong></td><td>You host it; buyers need a wallet; no card payments</td></tr>
+  </table>
+
+  <h2>The self-hosted route: CryptoPaywall</h2>
+  <p><a href="https://github.com/ShavitR/cryptopaywall">CryptoPaywall</a> is an open-source paywall you deploy to Vercel in minutes. The buyer flow:</p>
+  <ol>
+    <li>Buyer sends USDC from any wallet to <strong>your address directly</strong> - Ethereum, Base or Polygon all work.</li>
+    <li>Buyer pastes the transaction hash into your storefront page.</li>
+    <li>A serverless function verifies the transfer <em>on-chain</em> - correct token contract, correct recipient, sufficient amount - via public RPCs. No API keys.</li>
+    <li>An HMAC-signed link unlocks the download automatically.</li>
+  </ol>
+  <p>No database, no accounts, no middleman. Money never touches anyone else's server.</p>
+
+  <p><a class="btn" href="https://github.com/ShavitR/cryptopaywall">Deploy it free (GitHub)</a> <a class="btn" href="https://subsniff-store.vercel.app/">See a live store running it</a></p>
+
+  <h2>Honest trade-offs</h2>
+  <ul>
+    <li><strong>Card payments:</strong> none. Your audience needs a wallet. For dev tools, crypto-adjacent products and privacy-minded audiences this is fine; for grandma-facing cookbooks it is not.</li>
+    <li><strong>Refunds are manual:</strong> you send USDC back yourself - which also means no automated chargeback fraud against you.</li>
+    <li><strong>Taxes:</strong> crypto received is still income where you live. Keep records; nothing here is tax advice.</li>
+    <li><strong>Traffic is still your job:</strong> like every self-hosted option, nobody sends buyers to your door.</li>
+  </ul>
+
+  <p><a href="/">More tools by the author</a></p>
+</main>
+</body>
+</html>
